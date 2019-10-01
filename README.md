@@ -1,0 +1,1 @@
+This is work repository for Metaprogramming course at MIPT, 7th semester
