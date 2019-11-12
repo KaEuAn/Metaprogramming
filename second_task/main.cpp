@@ -1,114 +1,31 @@
+#include <stdio.h>
+#include <iostream>
 
-namespace internal {
-struct Void {};
-} // internal
+#include "something.h"
 
-template<typename ...Args>
-struct TypeList
-{
-    using Head = internal::Void;
-    using Tail =  internal::Void;
-};
-
-typedef TypeList<> EmptyTypeList;
-
-template<typename H, typename ...T>
-struct TypeList<H, T...>
-{
-    using Head = H;
-    using Tail = TypeList<T...>;
-};
-
-template <typename H, typename... T>
-struct Typelist<H, T...> {
-    using Head = H;
-    using Tail = Typelist<T...>;
-
-}
-
-template <typename H, typename... T>
-struct Typelist<H> {
-    ...
-}
-
-// without variadic
-template <typename H, typename T>
-struct Typelist {
-    ...
-}
-
-Typelist<H, Typelist<N, Typelist<M, P> > > t;
-
-// Loki
-
-template <typename H, typename... T>
-struct Typelist {
-    using Head = H;
-    using Tail = Typelist<T...>;
-
-    ...
-}
-
-struct Emptylist {
-    ...
-}
-
-///////////////////////////////////////////////////////////
-
-TypeAt<Typelist<...>, 2>::Result t;
-
-template <typename Typelist<typename H, typename... T>, size_t i>
-class TypeAt<Typelist<H, T...>, i> {
-    using Result = TypeAt<Typelist<T...>, i - 1>;
-}
-
-template <typename Typelist<typename H, typename... T>, size_t i>
-class TypeAt<Typelist<H, T...>, 0> {
-    using Result = Typelist<H, T...>::Head;
-}
-
-template <typename Typelist<typename H, typename... T>, size_t i>
-class TypeAt<Emptylist, i> {
-    using Result = Emptylist;
-}
-
-///////////////////////////////////////////////////////////
-
-SetAt<2, float, Typelist<int, int, int, int>>::Result t;
-
-// имхо херня
-template<size_t pos, typename Type, typename Typelist<typename H, typename... T>>
-struct SetAt<pos, Type, Typelist<H, T...>> {
-    using Result = Typelist<H, SetAt<pos - 1, Type, Typelist<T...>>::Result>;
-}
-
-template<size_t pos, typename Type, typename Typelist<typename H, typename... T>>
-struct SetAt<0, Type, Typelist<H, T...>> {
-    using Result = Typelist<Type, H, T...>;
-}
-
-template<size_t pos, typename Type, typename Typelist<typename H, typename... T>>
-struct SetAt<pos, Type, Emptylist> {
-    using Result = Typelist<Type>;
-}
-
-///////////////////////////////////////////////////////////
-
-EraseAll<float, Typelist<int, float, int, int>>::Result t;
-
-template <typename EType, typename Typelist<typename H, typename... T>>
-struct EraseAll<EType, Typelist<H, T...>> {
-    using Result = Typelist<EType, H, EraseAll<EType, Typelist<T...>>>;
-}
-
-template <typename EType, typename Typelist<typename H, typename... T>>
-struct EraseAll<EType, Typelist<EType, T...>> {
-    using Result = Typelist<EraseAll<EType, Typelist<T...>>>;
-}
-
-
+class A{};
+class B: public A{};
+class C: public B{};
+class D: public C{};
 
 int main() {
+
+    ////typelist Tests
     typedef TypeList<float, double, long double> floating_point_types;
+    typedef TypeList<int> TL1;
+    std::cout << std::boolalpha << IsEmpty<TL1>::value << " " << IsEmpty<EmptyTypeList>() << std::endl;
+    typedef TypeList<double, float, float, double, int, char, char, int, char> TL;
+    std::cout << std::boolalpha << Contains<char, TL>::value << " " << Contains<float, TypeList<double>>() << std::endl;
+    std::cout << Length<TL>::value << " " << Length<EmptyTypeList>() << std::endl;
+
+    std::cout << Contains<double, RemoveAll<double, TL>::type>() << ' ' << Contains<int, RemoveAll<double, TL>::type>() << std::endl;
+    std::cout << AddFront<char, TL1>::type() << std::endl;
+    std::cout << TL() << std::endl;
+    std::cout << Replace<TL, double, int>::Result() << std::endl;
+    typedef TypeList<A, A> TL5;
+    std::cout << SuperSubClass<A, B>::value << ' ' << SuperSubClass<char*, int>::value << std::endl;
+    std::cout << typeid(MostDerived<TypeList<B, A, B, C, B>, A>::Result).name() << std::endl;
+    std::cout << DerivedToFront<TypeList<B, C, A ,D>>::Result() << std::endl;
+
     return 0;
 }
