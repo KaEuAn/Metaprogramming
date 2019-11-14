@@ -175,7 +175,8 @@ struct Replace<TypeList<T, Args...>, T, U> {
 
 template<typename Head, typename T, typename U, typename ...Args>
 struct Replace<TypeList<Head, Args...>, T, U>{
-    using Result = TypeList<Head, Args...>;
+    using prev = typename Replace<TypeList<Args...>, T, U>::Result;
+    using Result = typename AddFront<Head, prev>::type;
 };
 
 //////////////////
