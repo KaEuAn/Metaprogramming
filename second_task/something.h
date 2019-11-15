@@ -75,6 +75,20 @@ class GenScatterHierarchy<TypeList<AtomicType>, Unit>: public Unit<AtomicType> {
     using LeftBase = Unit<AtomicType>;
 };
 
+////////////////////////
+
+
+template<typename TL, template<class AtomicType, class Base> class Unit, typename Root = internal::Void>
+struct GenLinearHierarchy;
+
+template<typename Head, typename ...Tail, template<class, class> class Unit, typename Root>
+struct GenLinearHierarchy<TypeList<Head, Tail...>, Unit, Root> : public Unit<Head, Root>, GenLinearHierarchy<TypeList<Tail...>, Unit, Root>{};
+
+template<template<class, class> class Unit, typename Root> 
+struct GenLinearHierarchy<EmptyTypeList, Unit, Root> : public Root{};
+
+
+
 //////////
 
 template<typename T>
@@ -106,3 +120,25 @@ struct AbstractFactory: public GenScatterHierarchy<TL, Unit> {
         return unit.DoCreate(Type2Type<T>());
     }
 };
+
+template<typename Product, typename Base>
+struct NewFactoryUnit: public Base {
+private:
+    using BaseTypes = typename Base::Types;
+protected:
+    using Types = typename BaseTypes::Tail;
+public:
+    using AbstractProduct = typename BaseTypes::Head;
+    Product* DoCreate(Type2Type<AbstractProduct>) {
+        return new Product;
+    }
+};
+
+template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename AbFactory::Types>
+struct ConcreteFactory : public GenLinearHierarcy<typename Reverse<TL>::Result, Creator, AbFactory> {
+    using Types = typename AbFactory::Types;
+    using ConcreteTypes = TL;
+};
+
+
+//template<int classNum, int TLNum, typename ...>

@@ -224,3 +224,22 @@ std::ostream& operator<<(std::ostream& ostr, TypeList<Args...> tl)
 	ostr << '}';
 	return ostr;
 }
+
+////////////
+
+template<typename TL> struct Reverse;
+
+template<> struct Reverse<internal::Void> {
+    using Result = internal::Void;
+};
+
+template<typename Head, typename ...Tail>
+struct Reverse<TypeList<Head, Tail...>> {
+    using Result = typename Append<Head, typename Reverse<TypeList<Tail...>>::Result>::type;
+};
+
+template<typename Head>
+struct Reverse<TypeList<Head>> {
+    using Result = TypeList<Head>;
+};
+

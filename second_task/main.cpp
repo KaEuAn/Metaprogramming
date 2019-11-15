@@ -9,7 +9,7 @@ class C: public B{};
 class D: public C{};
 
 template <class T>
-struct Unit {
+struct Unit1 {
     T value_;
 };
 
@@ -31,11 +31,12 @@ int main() {
     std::cout << SuperSubClass<A, B>::value << ' ' << SuperSubClass<char*, int>::value << std::endl;
     std::cout << typeid(MostDerived<TypeList<B, C, A ,D>, B>::Result).name() << std::endl;
     std::cout << DerivedToFront<TypeList<B, C, A ,D>>::Result() << std::endl;
+    std::cout << Reverse<TypeList<int, char, double, float>>::Result() << std::endl;
 
     
-    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit>;
+    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit1>;
     OC oc;
-    (static_cast<Unit<int>&>(oc)).value_ = 78;
-    std::cout << (static_cast<Unit<int>&>(oc)).value_;
+    (static_cast<Unit1<int>&>(oc)).value_ = 78;
+    std::cout << (static_cast<Unit1<int>&>(oc)).value_;
     return 0;
 }
