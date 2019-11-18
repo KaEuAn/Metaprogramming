@@ -229,8 +229,8 @@ std::ostream& operator<<(std::ostream& ostr, TypeList<Args...> tl)
 
 template<typename TL> struct Reverse;
 
-template<> struct Reverse<internal::Void> {
-    using Result = internal::Void;
+template<> struct Reverse<EmptyTypeList> {
+    using Result = EmptyTypeList;
 };
 
 template<typename Head, typename ...Tail>

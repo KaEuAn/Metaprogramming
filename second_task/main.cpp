@@ -6,13 +6,16 @@
 class A{};
 class B: public A{};
 class C: public B{};
+class C1: public B{};
 class D: public C{};
 
 class BB: public A{};
 class CC: public BB{};
+class CB: public BB{};
 
 class BBB: public A{};
 class CCC: public BBB{};
+class CCB: public BBB{};
 
 
 template <class T>
@@ -44,6 +47,8 @@ int main() {
     std::cout << DerivedToFront<TypeList<B, C, A ,D>>::Result() << std::endl;
     std::cout << SortTypeList<TypeList<B, C, A ,D>>::Result() << std::endl;
     std::cout << Reverse<TypeList<int, char, double, float>>::Result() << std::endl;
+    std::cout << TypeList<GetSuper<CCC, TypeList<CCC, BBB, CCB, BB, B, A>>::Result>() << std::endl;
+    std::cout << GetLinear<TypeList<CCC, CCB, BBB, BB, B, A>, CCB>::Result() << std::endl;
 
     
     using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit>;
@@ -53,7 +58,9 @@ int main() {
     std::cout << (static_cast<Unit<int>&>(oc)).value_ << std::endl;
 
     std::cout << FabricGeneratorHelper<TypeList<double, float, int>, TypeList<char, char, float>, TypeList<double>>::Types();
-
+    using MyFactoryHierarchy = FabricGenerator<3, 5, TypeList<B, BB>>;
+    //using MyFactoryHierarchy = FabricGenerator<3, 5, TypeList<B, BB, BBB>, TypeList<C, C1>, TypeList<CC, CB>, TypeList<CCC, CCB>>;
+    auto* CurrentFactory = new MyFactoryHierarchy::GetConcreteFactory<BBB>::result;
 
     return 0;
 }

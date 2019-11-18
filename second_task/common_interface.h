@@ -5,9 +5,10 @@ template<typename ...Types> struct FabricGeneratorHelper;
 template<int x, int y, typename ...TLs>
 struct FabricGenerator{
     using Types = typename SortTypeList<typename FabricGeneratorHelper<TLs...>::Types>::Result;
-    using AbFabric = AbstractFactory<Types>;
-    template<typename T> class GetConcreteFactory{
+    template<typename T> struct GetConcreteFactory{
         //maybe extract only necessary from Types?
+        using CurrentTypes = typename GetLinear<Types, T>::Result;
+        using AbFabric = AbstractFactory<CurrentTypes>;
         using result = ConcreteFactory<AbFabric>;
     };
 

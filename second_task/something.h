@@ -78,6 +78,47 @@ template<typename Head, typename ...Args> struct SortTypeList<TypeList<Head, Arg
 
 /////////////
 
+template<typename T, typename TL> struct GetSuper;
+
+template<typename T, typename Head, typename ...Tail> 
+struct GetSuper<T, TypeList<Head, Tail...>>{
+    using Result = typename std::conditional<
+        SuperSubClass<Head, T>::value,
+        Head,
+        typename GetSuper<T, TypeList<Tail...>>::Result
+    >::type;
+};
+
+template<typename T>
+struct GetSuper<T, EmptyTypeList>{
+    using Result = internal::Void;
+};
+
+template<typename TL, typename T>
+struct GetLinear;
+
+template<typename Head, typename ...Tail, typename T>
+struct GetLinear<TypeList<Head, Tail...>, T> {
+    using SuperClass = typename GetSuper<T, TypeList<Head, Tail...>>::Result;
+    using Result = typename std::conditional<
+        std::is_same<SuperClass, internal::Void>::value,
+        EmptyTypeList,
+        typename std::conditional<
+            std::is_same<Head, SuperClass>::value,
+            typename AddFront<Head, typename GetLinear<TypeList<Tail...>, SuperClass>::Result>::type,
+            typename GetLinear<TypeList<Tail...>, T>::Result
+        >::type
+    >::type;
+};
+
+
+template<typename T>
+struct GetLinear<EmptyTypeList, T> {
+    using Result = EmptyTypeList;
+};
+
+////////////
+
 template <typename TL, template<class> class Unit>
 class GenScatterHierarchy;
 
@@ -125,7 +166,7 @@ template <typename T>
 class AbstractFactoryUnit
 {
 public:
-    virtual T* DoCreate(Type2Type<T>) = 0;
+    virtual T* DoCreate(Type2Type<T>);
     virtual ~AbstractFactoryUnit() {}
 };
 
@@ -148,9 +189,9 @@ protected:
     using Types = typename BaseTypes::Tail;
 public:
     using AbstractProduct = typename BaseTypes::Head;
-    Product* DoCreate(Type2Type<AbstractProduct>) {
-        return new Product;
-    }
+    Product* DoCreate(Type2Type<Product>) {
+        return new AbstractProduct;
+    }   
 };
 
 template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename Reverse<typename AbFactory::Types>::Result>
