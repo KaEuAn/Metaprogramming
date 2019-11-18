@@ -1,15 +1,26 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "something.h"
+#include "common_interface.h"
 
 class A{};
 class B: public A{};
 class C: public B{};
 class D: public C{};
 
+class BB: public A{};
+class CC: public BB{};
+
+class BBB: public A{};
+class CCC: public BBB{};
+
+
 template <class T>
-struct Unit1 {
+struct Unit{
+    T value_;
+};
+template <class T, class Base>
+struct Unit1: public Base{
     T value_;
 };
 
@@ -31,12 +42,18 @@ int main() {
     std::cout << SuperSubClass<A, B>::value << ' ' << SuperSubClass<char*, int>::value << std::endl;
     std::cout << typeid(MostDerived<TypeList<B, C, A ,D>, B>::Result).name() << std::endl;
     std::cout << DerivedToFront<TypeList<B, C, A ,D>>::Result() << std::endl;
+    std::cout << SortTypeList<TypeList<B, C, A ,D>>::Result() << std::endl;
     std::cout << Reverse<TypeList<int, char, double, float>>::Result() << std::endl;
 
     
-    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit1>;
+    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit>;
+    using LH = GenLinearHierarchy<TypeList<int, char, bool>, Unit1>;
     OC oc;
-    (static_cast<Unit1<int>&>(oc)).value_ = 78;
-    std::cout << (static_cast<Unit1<int>&>(oc)).value_;
+    (static_cast<Unit<int>&>(oc)).value_ = 78;
+    std::cout << (static_cast<Unit<int>&>(oc)).value_ << std::endl;
+
+    std::cout << FabricGeneratorHelper<TypeList<double, float, int>, TypeList<char, char, float>, TypeList<double>>::Types();
+
+
     return 0;
 }

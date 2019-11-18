@@ -52,6 +52,30 @@ struct DerivedToFront<TypeList<Head, Args...>> {
     using Result = typename AddFront<TheMostDerived, Left>::type;
 };
 
+///////
+
+template<typename TL>
+struct SortTypeList{};
+
+template<>
+struct SortTypeList<EmptyTypeList>
+{
+    using Result = EmptyTypeList;
+};
+
+template<typename T>
+struct SortTypeList<TypeList<T>>
+{
+    using Result = TypeList<T>;
+};
+
+template<typename Head, typename ...Args> struct SortTypeList<TypeList<Head, Args...>> {
+    using Tail = TypeList<Args...>;
+    using TheMostDerived = typename MostDerived<Tail, Head>::Result;
+    using Left = typename Replace<Tail, TheMostDerived, Head>::Result;
+    using Result = typename AddFront<TheMostDerived, typename SortTypeList<Left>::Result>::type;
+};
+
 /////////////
 
 template <typename TL, template<class> class Unit>
@@ -64,15 +88,10 @@ template <typename Head, typename ...Tail, template <class> class Unit>
 class GenScatterHierarchy <TypeList<Head, Tail...>, Unit>
     : public Unit<Head>, public GenScatterHierarchy<TypeList<Tail...>, Unit>
 {
-public:
-    using TList = TypeList<Head, Tail...>;
-    using LeftBase = GenScatterHierarchy<TypeList<Head>, Unit>;
-    using RightBase = GenScatterHierarchy<TypeList<Tail...>, Unit>;
 };
 
 template <class AtomicType, template<class> class Unit>
 class GenScatterHierarchy<TypeList<AtomicType>, Unit>: public Unit<AtomicType> {
-    using LeftBase = Unit<AtomicType>;
 };
 
 ////////////////////////
@@ -134,8 +153,8 @@ public:
     }
 };
 
-template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename AbFactory::Types>
-struct ConcreteFactory : public GenLinearHierarcy<typename Reverse<TL>::Result, Creator, AbFactory> {
+template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename Reverse<typename AbFactory::Types>::Result>
+struct ConcreteFactory : public GenLinearHierarchy<TL, Creator, AbFactory> {
     using Types = typename AbFactory::Types;
     using ConcreteTypes = TL;
 };
