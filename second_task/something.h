@@ -166,7 +166,7 @@ template <typename T>
 class AbstractFactoryUnit
 {
 public:
-    virtual T* DoCreate(Type2Type<T>);
+    virtual T* DoCreate(Type2Type<T>) = 0;
     virtual ~AbstractFactoryUnit() {}
 };
 
@@ -189,12 +189,12 @@ protected:
     using Types = typename BaseTypes::Tail;
 public:
     using AbstractProduct = typename BaseTypes::Head;
-    Product* DoCreate(Type2Type<Product>) {
-        return new AbstractProduct;
+    AbstractProduct* DoCreate(Type2Type<Product>) {
+        return new Product;
     }   
 };
 
-template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename AbFactory::Types>
+template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename Reverse<typename AbFactory::Types>::Result>
 struct ConcreteFactory : public GenLinearHierarchy<TL, Creator, AbFactory> {
     using Types = typename AbFactory::Types;
     using ConcreteTypes = TL;
