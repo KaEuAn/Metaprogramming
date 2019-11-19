@@ -19,11 +19,11 @@ class CCB: public BBB{};
 
 
 template <class T>
-struct Unit{
+struct Unit1{
     T value_;
 };
 template <class T, class Base>
-struct Unit1: public Base{
+struct Unit2: public Base{
     T value_;
 };
 
@@ -51,16 +51,17 @@ int main() {
     std::cout << GetLinear<TypeList<CCC, CCB, BBB, BB, B, A>, CCB>::Result() << std::endl;
 
     
-    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit>;
-    using LH = GenLinearHierarchy<TypeList<int, char, bool>, Unit1>;
+    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit1>;
+    using LH = GenLinearHierarchy<TypeList<int, char, bool>, Unit2>;
     OC oc;
-    (static_cast<Unit<int>&>(oc)).value_ = 78;
-    std::cout << (static_cast<Unit<int>&>(oc)).value_ << std::endl;
+    (static_cast<Unit1<int>&>(oc)).value_ = 78;
+    std::cout << (static_cast<Unit1<int>&>(oc)).value_ << std::endl;
 
     std::cout << FabricGeneratorHelper<TypeList<double, float, int>, TypeList<char, char, float>, TypeList<double>>::Types();
     using MyFactoryHierarchy = FabricGenerator<3, 5, TypeList<B, BB>>;
     //using MyFactoryHierarchy = FabricGenerator<3, 5, TypeList<B, BB, BBB>, TypeList<C, C1>, TypeList<CC, CB>, TypeList<CCC, CCB>>;
-    auto* CurrentFactory = new MyFactoryHierarchy::GetConcreteFactory<BBB>::result;
+    auto* CurrentFactory = new MyFactoryHierarchy::GetConcreteFactory<BB>::result;
+    BBB* x = CurrentFactory->Create<BBB>();
 
     return 0;
 }

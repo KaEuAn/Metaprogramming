@@ -142,7 +142,7 @@ template<typename TL, template<class AtomicType, class Base> class Unit, typenam
 struct GenLinearHierarchy;
 
 template<typename Head, typename ...Tail, template<class, class> class Unit, typename Root>
-struct GenLinearHierarchy<TypeList<Head, Tail...>, Unit, Root> : public Unit<Head, Root>, GenLinearHierarchy<TypeList<Tail...>, Unit, Root>{};
+struct GenLinearHierarchy<TypeList<Head, Tail...>, Unit, Root> : public Unit<Head, GenLinearHierarchy<TypeList<Tail...>, Unit, Root>>{};
 
 template<template<class, class> class Unit, typename Root> 
 struct GenLinearHierarchy<EmptyTypeList, Unit, Root> : public Root{};
@@ -176,8 +176,8 @@ struct AbstractFactory: public GenScatterHierarchy<TL, Unit> {
 
     template<typename T>
     T* Create() {
-        Unit<T>& unit = *this;
-        return unit.DoCreate(Type2Type<T>());
+        Unit<T>* unit = this;
+        return unit->DoCreate(Type2Type<T>());
     }
 };
 
@@ -194,7 +194,7 @@ public:
     }   
 };
 
-template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename Reverse<typename AbFactory::Types>::Result>
+template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename AbFactory::Types>
 struct ConcreteFactory : public GenLinearHierarchy<TL, Creator, AbFactory> {
     using Types = typename AbFactory::Types;
     using ConcreteTypes = TL;
