@@ -5,39 +5,39 @@
 
 struct A{};
 struct B: public A{
-    B() {std::cout << "B\n";}
+    B() {std::cout << "createB\n";}
 };
 struct C: public B{
-    C() {std::cout << "C\n";}
+    C() {std::cout << "createC\n";}
 };
 struct C1: public B{
-    C1() {std::cout << "C1\n";}
+    C1() {std::cout << "createC1\n";}
 };
 struct D: public C{
-    D() {std::cout << "D\n";}
+    D() {std::cout << "createD\n";}
 };
 
 struct BB: public A{
-    BB() {std::cout << "BB\n";}
+    BB() {std::cout << "createBB\n";}
 };
 struct CC: public BB{
-    CC() {std::cout << "CC\n";}
+    CC() {std::cout << "createCC\n";}
 };
 struct CB: public BB{
-    CB() {std::cout << "CB\n";}
+    CB() {std::cout << "createCB\n";}
 };
 
 struct BBB: public A{
-    BBB() {std::cout << "BBB\n";}
+    BBB() {std::cout << "createBBB\n";}
 };
 struct CCC: public BBB{
-    CCC() {std::cout << "CCC\n";}
+    CCC() {std::cout << "createCCC\n";}
 };
 struct CCB: public BBB{
-    CCB() {std::cout << "CCB\n";}
+    CCB() {std::cout << "createCCB\n";}
 };
 struct CCCB: public CCB{
-    CCCB() {std::cout << "CCCB\n";}
+    CCCB() {std::cout << "createCCCB\n";}
 };
 
 
@@ -75,11 +75,6 @@ int main() {
     std::cout << GetLinear<TypeList<CCC, CCB, BBB, BB, B, A>, CCB>::Result() << std::endl;
     std::cout << "end unit tests\n";
     
-    using OC = GenScatterHierarchy<TypeList<int, double, char>, Unit1>;
-    using LH = GenLinearHierarchy<TypeList<int, char, bool>, Unit2>;
-    OC oc;
-    (static_cast<Unit1<int>&>(oc)).value_ = 78;
-    std::cout << (static_cast<Unit1<int>&>(oc)).value_ << std::endl;
 
     std::cout << FabricGeneratorHelper<TypeList<double, float, int>, TypeList<char, char, float>, TypeList<double>>::Types() << std::endl;
     using MyFactoryHierarchy = FabricGenerator<3, 5, TypeList<B, BB>>;

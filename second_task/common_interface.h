@@ -9,7 +9,7 @@ struct FabricGenerator{
         //maybe extract only necessary from Types?
         using CurrentTypes = typename GetLinear<Types, T>::Result;
         using AbFabric = AbstractFactory<CurrentTypes>;
-        using result = ConcreteFactory<AbFabric>;
+        using result = ConcreteFactory<T, AbFabric>;
     };
 
 };

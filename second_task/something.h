@@ -21,6 +21,19 @@ struct SuperSubClass{
 };
 
 
+template<typename TL> struct GetLast;
+
+template<typename Head, typename ...Tail>
+struct GetLast<TypeList<Head, Tail...>>{
+    using Result = typename GetLast<TypeList<Tail...>>::Result;
+};
+
+template<typename Head>
+struct GetLast<TypeList<Head>>{
+    using Result = Head;
+};
+
+
 template <typename TL, typename T> struct MostDerived{};
 
 template <typename T>
@@ -138,14 +151,18 @@ class GenScatterHierarchy<TypeList<AtomicType>, Unit>: public Unit<AtomicType> {
 ////////////////////////
 
 
-template<typename TL, template<class AtomicType, class Base> class Unit, typename Root = internal::Void>
+template<typename XXX, typename TL, template<class AtomicType, class Base> class Unit, typename Root = internal::Void>
 struct GenLinearHierarchy;
 
-template<typename Head, typename ...Tail, template<class, class> class Unit, typename Root>
-struct GenLinearHierarchy<TypeList<Head, Tail...>, Unit, Root> : public Unit<Head, GenLinearHierarchy<TypeList<Tail...>, Unit, Root>>{};
+template<typename XXX, typename Head, typename ...Tail, template<class, class> class Unit, typename Root>
+struct GenLinearHierarchy<XXX, TypeList<Head, Tail...>, Unit, Root> : public Unit<Head, GenLinearHierarchy<XXX, TypeList<Tail...>, Unit, Root>>{
+    using NN = XXX;
+};
 
-template<template<class, class> class Unit, typename Root> 
-struct GenLinearHierarchy<EmptyTypeList, Unit, Root> : public Root{};
+template<typename XXX, template<class, class> class Unit, typename Root> 
+struct GenLinearHierarchy<XXX, EmptyTypeList, Unit, Root> : public Root{
+    using NN = XXX;
+};
 
 
 
@@ -184,18 +201,15 @@ struct AbstractFactory: public GenScatterHierarchy<TL, Unit> {
 template<typename Product, typename Base>
 struct NewFactoryUnit: public Base {
 private:
-    using BaseTypes = typename Base::Types;
-protected:
-    using Types = typename BaseTypes::Tail;
+    using BaseTypes = typename Base::NN;
 public:
-    using AbstractProduct = typename BaseTypes::Head;
-    AbstractProduct* DoCreate(Type2Type<Product>) {
-        return new Product;
+    Product* DoCreate(Type2Type<Product>) {
+        return new BaseTypes;
     }   
 };
 
-template<typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename Reverse<typename AbFactory::Types>::Result>
-struct ConcreteFactory : public GenLinearHierarchy<TL, Creator, AbFactory> {
+template<typename XXX, typename AbFactory, template<class, class> class Creator = NewFactoryUnit, typename TL = typename AbFactory::Types>
+struct ConcreteFactory : public GenLinearHierarchy<XXX, TL, Creator, AbFactory> {
     using Types = typename AbFactory::Types;
     using ConcreteTypes = TL;
 };
