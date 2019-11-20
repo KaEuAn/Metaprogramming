@@ -37,7 +37,7 @@ struct CCB: public BBB{
     CCB() {std::cout << "createCCB\n";}
 };
 struct CCCB: public CCB{
-    CCCB() {std::cout << "createCCCB\n";}
+    CCCB() = delete;// {std::cout << "createCCCB\n";}
 };
 
 
@@ -73,6 +73,7 @@ int main() {
     std::cout << Reverse<TypeList<int, char, double, float>>::Result() << std::endl;
     std::cout << TypeList<GetSuper<CCC, TypeList<CCC, BBB, CCB, BB, B, A>>::Result>() << std::endl;
     std::cout << GetLinear<TypeList<CCC, CCB, BBB, BB, B, A>, CCB>::Result() << std::endl;
+    std::cout << RemoveBad<TypeList<CCCB>>::Result() << std::endl;
     std::cout << "end unit tests\n";
     
 
