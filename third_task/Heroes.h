@@ -91,7 +91,7 @@ public:
     }
 
     void Visit(Brigitte& brig) override {
-        brig.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(brig));
+        brig.basic_attack += GetBasicAttackChange(dynamic_cast<Hero&>(brig));
         brig.melee_attack = brig.basic_attack;
         if (change_ult) {
             brig.ult_range += 2;

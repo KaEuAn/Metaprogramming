@@ -30,7 +30,7 @@ int main() {
 
     VisitFactory<Visitor, TypeList<Nerf, Buff>, Hero, TypeList<Brigitte, Genji>, std::string, bool> factory;
     Nerf nerf(0.1, false);
-    Buff buff(0.1, false);
+    Buff buff(0.1, true);
     std::cout << brig.ult_range;
     std::cout << dynamic_cast<Brigitte*>(&brig) << '\n';
     factory.make(nerf, brig, true);
