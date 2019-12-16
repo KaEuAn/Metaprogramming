@@ -28,13 +28,15 @@ int main() {
     //test PrintAll
     PrintAll(5, "dsafdas", 5.6);
 
-    //VisitFactory<Visitor, TypeList<Nerf, Buff>, Hero, TypeList<Brigitte, Genji>, std::string, void> factory;
-    Nerf nerffff(0.05, false);
-    //Buff buff(0.1, false);
+    VisitFactory<Visitor, TypeList<Nerf, Buff>, Hero, TypeList<Brigitte, Genji>, std::string, bool> factory;
+    Nerf nerf(0.1, false);
+    Buff buff(0.1, false);
     std::cout << brig.ult_range;
-    //std::cout << dynamic_cast<Brigitte*>(&brig);
-    //factory.make(nerf, brig);
-
+    std::cout << dynamic_cast<Brigitte*>(&brig);
+    //factory.make(nerf, brig, true);
+    //factory.make(buff, brig, true);
+    factory.make(nerf, gen, true);
+    factory.make(buff, gen, false);
 
     return 0;
 }
