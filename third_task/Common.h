@@ -38,38 +38,42 @@ public:
 };
 
 template<>
-class VFunctor<std::string, Buff, Genji, bool>: public  VirtualFunctor<std::string, Buff&, Genji&, bool> {
+struct VFunctor<std::string, Buff, Genji, bool>: public  VirtualFunctor<std::string, Buff&, Genji&, bool> {
     std::string operator()(Buff& buff, Genji& genji, bool print) override {
+        std::cout << "Genji Buffed ";
         if (print) {
-            std::cout << genji.GetStats();
+            std::cout << genji.GetStats() << '\n';
         }
         return genji.GetStats();
     }
 };
 template<>
-class VFunctor<std::string, Buff, Brigitte, bool>: public  VirtualFunctor<std::string, Buff&, Brigitte&, bool> {
+struct VFunctor<std::string, Buff, Brigitte, bool>: public  VirtualFunctor<std::string, Buff&, Brigitte&, bool> {
     std::string operator()(Buff& buff, Brigitte& brig, bool print) override {
+        std::cout << "Brigitte Buffed ";
         if (print) {
-            std::cout << brig.GetStats();
+            std::cout << brig.GetStats() << '\n';
         }
         return brig.GetStats();
     }
 };
 template<>
-class VFunctor<std::string, Nerf, Brigitte, bool>: public  VirtualFunctor<std::string, Nerf&, Brigitte&, bool> {
+struct VFunctor<std::string, Nerf, Brigitte, bool>: public  VirtualFunctor<std::string, Nerf&, Brigitte&, bool> {
     std::string operator()(Nerf& nerf, Brigitte& brig, bool print) override {
+        std::cout << "Brigitte Nerfed ";
         if (print) {
-            std::cout << brig.GetStats();
+            std::cout << brig.GetStats() << '\n';
         }
         return brig.GetStats();
     }
 };
 
 template<>
-class VFunctor<std::string, Nerf, Genji, bool>: public  VirtualFunctor<std::string, Nerf&, Genji&, bool> {
+struct VFunctor<std::string, Nerf, Genji, bool>: public  VirtualFunctor<std::string, Nerf&, Genji&, bool> {
     std::string operator()(Nerf& nerf, Genji& genji, bool print) override {
+        std::cout << "Genji Nerfed ";
         if (print) {
-            std::cout << genji.GetStats();
+            std::cout << genji.GetStats() << '\n';
         }
         return genji.GetStats();
     }
@@ -91,8 +95,8 @@ struct VisitFactory<Visitor, TypeList<VHead, VTail...>, Acceptor, TypeList<AHead
         if(ACheck && VCheck) {
             acceptor.Accept(visitor);
             VFunctor<Result, VHead, AHead, Args...> cur_functor;
-            cur_functor(visitor, acceptor, args...);
-            std::cout << "okkkk";
+            Result ans = cur_functor(static_cast<VHead&>(visitor), static_cast<AHead&>(acceptor), args...);
+            return ans;
         } else if (! ACheck) {
             return VisitFactory<Visitor, TypeList<VHead, VTail...>, Acceptor, TypeList<ATail...>, Result, Args...>::make(visitor, acceptor, args...);
         } else {
@@ -109,8 +113,8 @@ struct VisitFactory<Visitor, TypeList<VHead>, Acceptor, TypeList<AHead, ATail...
         if(ACheck && VCheck) {
             acceptor.Accept(visitor);
             VFunctor<Result, VHead, AHead, Args...> cur_functor;
-            cur_functor(visitor, acceptor, args...);
-            std::cout << "ok";
+            Result ans = cur_functor(static_cast<VHead&>(visitor), static_cast<AHead&>(acceptor), args...);
+            return ans;
         } else if (! ACheck) {
             return VisitFactory<Visitor, TypeList<VHead>, Acceptor, TypeList<ATail...>, Result, Args...>::make(visitor, acceptor, args...);
         } else {
@@ -127,8 +131,8 @@ struct VisitFactory<Visitor, TypeList<VHead, VTail...>, Acceptor, TypeList<AHead
         if(ACheck && VCheck) {
             acceptor.Accept(visitor);
             VFunctor<Result, VHead, AHead, Args...> cur_functor;
-            cur_functor(visitor, acceptor, args...);
-            std::cout << "ok";
+            Result ans = cur_functor(static_cast<VHead&>(visitor), static_cast<AHead&>(acceptor), args...);
+            return ans;
         } else if (! ACheck) {
             return Result();
         } else {
@@ -145,8 +149,8 @@ struct VisitFactory<Visitor, TypeList<VHead>, Acceptor, TypeList<AHead>, Result,
         if(ACheck && VCheck) {
             acceptor.Accept(visitor);
             VFunctor<Result, VHead, AHead, Args...> cur_functor;
-            cur_functor(visitor, acceptor, args...);
-            std::cout << "ok";
+            Result ans = cur_functor(static_cast<VHead&>(visitor), static_cast<AHead&>(acceptor), args...);
+            return ans;
         } else {
             return Result();
         }

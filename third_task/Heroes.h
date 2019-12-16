@@ -68,8 +68,8 @@ public:
 class Visitor {
 protected:
     double impact;
-    double GetBasicAttackChange(Hero& hero, double impact) const {
-        return hero.basic_attack * impact / 100;
+    double GetBasicAttackChange(Hero& hero) const {
+        return hero.basic_attack * impact;
     }
 public:
     virtual void Visit(Genji&) = 0;
@@ -84,14 +84,14 @@ public:
         impact = imp;}
 
     void Visit(Genji& genji) override {
-        genji.basic_attack += GetBasicAttackChange(dynamic_cast<Hero&>(genji), impact);
+        genji.basic_attack += GetBasicAttackChange(dynamic_cast<Hero&>(genji));
         if (change_ult) {
             genji.ult_attack += 20;
         }
     }
 
     void Visit(Brigitte& brig) override {
-        brig.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(brig), impact);
+        brig.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(brig));
         brig.melee_attack = brig.basic_attack;
         if (change_ult) {
             brig.ult_range += 2;
@@ -110,11 +110,12 @@ public:
     }
 
     void Visit(Genji& genji) override {
-        genji.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(genji), impact);
+        genji.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(genji));
+        genji.dash_attack -= 5 * genji.dash_attack * impact;
     }
 
     void Visit(Brigitte& brig) override {
-        brig.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(brig), impact);
+        brig.basic_attack -= GetBasicAttackChange(dynamic_cast<Hero&>(brig));
         brig.melee_attack = brig.basic_attack;
         if (change_shields) {
             brig.shield = 100;
