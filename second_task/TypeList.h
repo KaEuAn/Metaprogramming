@@ -2,6 +2,7 @@
 #include <typeinfo>
 
 
+
 namespace internal {
 struct Void {};
 } // internal
